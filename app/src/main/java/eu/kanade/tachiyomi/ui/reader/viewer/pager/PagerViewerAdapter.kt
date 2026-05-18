@@ -194,13 +194,3 @@ class PagerViewerAdapter(private val viewer: PagerViewer) : ViewPagerAdapter() {
         readerThemedContext = viewer.activity.createReaderThemeContext()
     }
 }
-
-/**
- * Check if a URL string is a video file URL.
- * Used to determine whether to create a VideoPageHolder or PagerPageHolder.
- */
-private fun String.isVideoUrl(): Boolean {
-    val lower = lowercase()
-    return lower.endsWith(".mp4") || lower.endsWith(".m3u8") ||
-        lower.endsWith(".ts") || lower.endsWith(".mkv") || lower.endsWith(".webm")
-}
