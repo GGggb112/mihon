@@ -132,7 +132,6 @@ class VideoPageHolder(
             withUIContext {
                 addView(playerView)
             }
-
         } catch (e: Exception) {
             logcat(e)
             withUIContext {
