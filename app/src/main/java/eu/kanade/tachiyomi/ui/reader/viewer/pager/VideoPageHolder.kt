@@ -18,6 +18,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import logcat.LogPriority
 import tachiyomi.core.common.util.lang.launchUI
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.logcat
@@ -102,16 +103,20 @@ class VideoPageHolder(
                 override fun onPlaybackStateChanged(state: Int) {
                     when (state) {
                         Player.STATE_READY -> {
-                            withUIContext {
-                                progressIndicator?.hide()
-                                if (playerView?.parent == null) {
-                                    addView(playerView, 0)
+                            scope.launch {
+                                withUIContext {
+                                    progressIndicator?.hide()
+                                    if (playerView?.parent == null) {
+                                        addView(playerView, 0)
+                                    }
                                 }
                             }
                         }
                         Player.STATE_BUFFERING -> {
-                            withUIContext {
-                                progressIndicator?.show()
+                            scope.launch {
+                                withUIContext {
+                                    progressIndicator?.show()
+                                }
                             }
                         }
                         Player.STATE_ENDED -> {
@@ -123,8 +128,10 @@ class VideoPageHolder(
                 }
 
                 override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
-                    withUIContext {
-                        setError(error)
+                    scope.launch {
+                        withUIContext {
+                            setError(error)
+                        }
                     }
                 }
             })
@@ -133,7 +140,7 @@ class VideoPageHolder(
                 addView(playerView)
             }
         } catch (e: Exception) {
-            logcat(e)
+            logcat(LogPriority.ERROR, e)
             withUIContext {
                 setError(e)
             }
@@ -164,7 +171,7 @@ class VideoPageHolder(
     }
 }
 
-private fun String.isVideoUrl(): Boolean {
+internal fun String.isVideoUrl(): Boolean {
     return endsWith(".mp4", true) ||
         endsWith(".m3u8", true) ||
         endsWith(".ts", true) ||
